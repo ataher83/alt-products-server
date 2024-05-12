@@ -105,6 +105,9 @@ async function run() {
 
 
 
+
+
+
   app.put('/craft/:id', async(req, res) => {
       const id = req.params.id 
       const filter = { _id: new ObjectId(id)} 
@@ -129,8 +132,6 @@ async function run() {
       const result = await craftCollection.updateOne(filter, craft, options)
       res.send(result) 
   })
-
-
 
   // ***********************
   // The Alt Products এর 
@@ -161,6 +162,12 @@ async function run() {
 
 
 
+
+
+
+
+
+
   app.delete('/craft/:id', async(req, res) => {
       const id = req.params.id 
       const query = { _id: new ObjectId(id)} 
@@ -168,13 +175,17 @@ async function run() {
       res.send(result) 
   })
 
+  // ***********************
+  // The Alt Products এর 
+  app.delete('/queries/:id', async(req, res) => {
+      const id = req.params.id 
+      const query = { _id: new ObjectId(id)} 
+      const result = await queriesCollection.deleteOne(query)
+      res.send(result) 
+  })
 
-// ম্যানুয়ালি ডাটাবেজে কালেকশন করা ডাটা গেট করা 
-//   app.get('/catagories', async(req, res) => {
-//     const cursor = catagoriesCollection.find() 
-//     const result = await cursor.toArray() 
-//     res.send(result) 
-// })
+
+
 
 
 
