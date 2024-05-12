@@ -6,13 +6,13 @@ const app = express()
 const port = process.env.PORT || 5000
 
 //middleware
-// app.use(cors())
-app.use(
-  cors({
-      origin: ['http://localhost:5173', 'https://the-art-gallery-74571.web.app/'],
-      credentials: true,
-  }),
-)
+app.use(cors())
+// app.use(
+//   cors({
+//       origin: ['http://localhost:5173', 'https://the-art-gallery-74571.web.app'],
+//       credentials: true,
+//   }),
+// )
 app.use(express.json())
 
 
@@ -35,12 +35,35 @@ async function run() {
 
   const craftCollection = client.db('craftDB').collection('craft');
   const userCollection = client.db('craftDB').collection('user');
+  const catagoriesCollection = client.db('craftDB').collection('catagories');
+
+
+  const queriesCollection = client.db('altProductsDB').collection('queries');
+
+
+
+
+
+
 
   app.get('/craft', async(req, res) => {
       const cursor = craftCollection.find() 
       const result = await cursor.toArray() 
       res.send(result) 
   })
+
+  // ***********************
+  // The Alt Products এর 
+  app.get('/queries', async(req, res) => {
+      const cursor = queriesCollection.find() 
+      const result = await cursor.toArray() 
+      res.send(result) 
+  })
+
+
+
+
+
 
   app.get('/craft/:id', async(req, res) => {
       const id = req.params.id 
@@ -49,12 +72,38 @@ async function run() {
       res.send(result) 
   })
 
+   // ***********************
+  // The Alt Products এর 
+  app.get('/queries/:id', async(req, res) => {
+      const id = req.params.id 
+      const query = { _id: new ObjectId(id)} 
+      const result = await queriesCollection.findOne(query)
+      res.send(result) 
+  })
+
+
+
+
+
+
+
   app.post('/craft', async(req, res) => {
       const newCraft = req.body
       console.log(newCraft)
       const result = await craftCollection.insertOne(newCraft)
       res.send(result) 
   })
+
+// ***********************
+  // The Alt Products এর 
+  app.post('/queries', async(req, res) => {
+      const newQuery = req.body
+      console.log(newQuery)
+      const result = await queriesCollection.insertOne(newQuery)
+      res.send(result) 
+  })
+
+
 
   app.put('/craft/:id', async(req, res) => {
       const id = req.params.id 
@@ -81,12 +130,56 @@ async function run() {
       res.send(result) 
   })
 
+
+
+  // ***********************
+  // The Alt Products এর 
+  app.put('/queries/:id', async(req, res) => {
+      const id = req.params.id 
+      const filter = { _id: new ObjectId(id)} 
+      const options = { upsert: true }
+      const updatedQuery = req.body
+      const query = {
+          $set: {
+            productImage: updatedCraft.productImage,
+            productName: updatedCraft.productName,
+            productBrand: updatedCraft.productBrand,
+            queryTitle: updatedCraft.queryTitle,
+            boycottingReasonDetails: updatedCraft.boycottingReasonDetails,
+            userEmail: updatedCraft.userEmail,
+            userName: updatedCraft.userName,
+            userImage: updatedCraft.userImage,
+            currentDateAndTime: updatedCraft.currentDateAndTime,
+            recommendationCount: updatedCraft.recommendationCount
+          }
+      }
+
+      const result = await queriesCollection.updateOne(filter, queries, options)
+      res.send(result) 
+  })
+
+
+
+
   app.delete('/craft/:id', async(req, res) => {
       const id = req.params.id 
       const query = { _id: new ObjectId(id)} 
       const result = await craftCollection.deleteOne(query)
       res.send(result) 
   })
+
+
+// ম্যানুয়ালি ডাটাবেজে কালেকশন করা ডাটা গেট করা 
+//   app.get('/catagories', async(req, res) => {
+//     const cursor = catagoriesCollection.find() 
+//     const result = await cursor.toArray() 
+//     res.send(result) 
+// })
+
+
+
+
+
 
 
   //user related apis
@@ -102,7 +195,7 @@ async function run() {
     const result = await userCollection.insertOne(user)
     res.send(result) 
   })
-
+  
 
   app.patch('/user', async(req, res) => {
     const user = req.body 
@@ -124,6 +217,14 @@ async function run() {
 })
 
 
+
+
+
+
+
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -139,9 +240,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Art Gallery Server is running')
+    res.send('The Alt Products Server is running')
   })
   
   app.listen(port, () => {
-    console.log(`Art Gallery Server is running on port: ${port}`)
+    console.log(`The Alt Products Server is running on port: ${port}`)
   })
