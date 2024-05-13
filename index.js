@@ -34,10 +34,12 @@ async function run() {
 
 
   const queriesCollection = client.db('altProductsDB').collection('queries');
+  const recommendationsCollection = client.db('altProductsDB').collection('recommendations');
 
 
 
 
+// queries related api
 
   app.get('/queries', async(req, res) => {
       const cursor = queriesCollection.find() 
@@ -97,6 +99,42 @@ async function run() {
 
 
 
+// // recommendations related api
+
+  app.get('/recommendations', async(req, res) => {
+      const cursor = recommendationsCollection.find() 
+      const result = await cursor.toArray() 
+      res.send(result) 
+  })
+
+
+  app.get('/recommendations/:id', async(req, res) => {
+      const id = req.params.id 
+      const query = { _id: new ObjectId(id)} 
+      const result = await recommendationsCollection.findOne(query)
+      res.send(result) 
+  })
+
+
+  app.post('/recommendations', async(req, res) => {
+      const newQuery = req.body
+      // console.log(newQuery)
+      const result = await recommendationsCollection.insertOne(newQuery)
+      res.send(result) 
+  })
+
+
+  app.delete('/recommendations/:id', async(req, res) => {
+      const id = req.params.id 
+      const query = { _id: new ObjectId(id)} 
+      const result = await recommendationsCollection.deleteOne(query)
+      res.send(result) 
+  })
+
+
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -107,7 +145,6 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
 
 
 
