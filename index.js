@@ -6,13 +6,13 @@ const app = express()
 const port = process.env.PORT || 5000
 
 //middleware
-app.use(cors())
-// app.use(
-//   cors({
-//       origin: ['http://localhost:5173', 'https://the-art-gallery-74571.web.app'],
-//       credentials: true,
-//   }),
-// )
+// app.use(cors())
+app.use(
+  cors({
+      origin: ['http://localhost:5173', 'https://the-alt-products.web.app'],
+      credentials: true,
+  }),
+)
 app.use(express.json())
 
 
@@ -33,27 +33,12 @@ async function run() {
     // await client.connect();  
 
 
-  const craftCollection = client.db('craftDB').collection('craft');
-  const userCollection = client.db('craftDB').collection('user');
-  const catagoriesCollection = client.db('craftDB').collection('catagories');
-
-
   const queriesCollection = client.db('altProductsDB').collection('queries');
 
 
 
 
 
-
-
-  app.get('/craft', async(req, res) => {
-      const cursor = craftCollection.find() 
-      const result = await cursor.toArray() 
-      res.send(result) 
-  })
-
-  // ***********************
-  // The Alt Products এর 
   app.get('/queries', async(req, res) => {
       const cursor = queriesCollection.find() 
       const result = await cursor.toArray() 
@@ -61,19 +46,6 @@ async function run() {
   })
 
 
-
-
-
-
-  app.get('/craft/:id', async(req, res) => {
-      const id = req.params.id 
-      const query = { _id: new ObjectId(id)} 
-      const result = await craftCollection.findOne(query)
-      res.send(result) 
-  })
-
-   // ***********************
-  // The Alt Products এর 
   app.get('/queries/:id', async(req, res) => {
       const id = req.params.id 
       const query = { _id: new ObjectId(id)} 
@@ -82,20 +54,6 @@ async function run() {
   })
 
 
-
-
-
-
-
-  app.post('/craft', async(req, res) => {
-      const newCraft = req.body
-      console.log(newCraft)
-      const result = await craftCollection.insertOne(newCraft)
-      res.send(result) 
-  })
-
-// ***********************
-  // The Alt Products এর 
   app.post('/queries', async(req, res) => {
       const newQuery = req.body
       console.log(newQuery)
@@ -104,37 +62,6 @@ async function run() {
   })
 
 
-
-
-
-
-  app.put('/craft/:id', async(req, res) => {
-      const id = req.params.id 
-      const filter = { _id: new ObjectId(id)} 
-      const options = { upsert: true }
-      const updatedCraft = req.body
-      const craft = {
-          $set: {
-              image: updatedCraft.image,
-              itemName: updatedCraft.itemName,
-              subcategoryName: updatedCraft.subcategoryName,
-              shortDescription: updatedCraft.shortDescription,
-              price: updatedCraft.price,
-              rating: updatedCraft.rating,
-              customization: updatedCraft.customization,
-              processingTime: updatedCraft.processingTime,
-              stockStatus: updatedCraft.stockStatus,
-              userEmail: updatedCraft.userEmail,
-              userName: updatedCraft.userName
-          }
-      }
-
-      const result = await craftCollection.updateOne(filter, craft, options)
-      res.send(result) 
-  })
-
-  // ***********************
-  // The Alt Products এর 
   app.put('/queries/:id', async(req, res) => {
       const id = req.params.id 
       const filter = { _id: new ObjectId(id)} 
@@ -159,78 +86,12 @@ async function run() {
       res.send(result) 
   })
 
-
-
-
-
-
-
-
-
-
-  app.delete('/craft/:id', async(req, res) => {
-      const id = req.params.id 
-      const query = { _id: new ObjectId(id)} 
-      const result = await craftCollection.deleteOne(query)
-      res.send(result) 
-  })
-
-  // ***********************
-  // The Alt Products এর 
   app.delete('/queries/:id', async(req, res) => {
       const id = req.params.id 
       const query = { _id: new ObjectId(id)} 
       const result = await queriesCollection.deleteOne(query)
       res.send(result) 
   })
-
-
-
-
-
-
-
-
-
-
-  //user related apis
-  app.get('/user', async(req, res) => {
-    const cursor = userCollection.find() 
-    const users = await cursor.toArray() 
-    res.send(users) 
-})
-
-  app.post('/user', async(req, res) => {
-    const user = req.body 
-    console.log(user)
-    const result = await userCollection.insertOne(user)
-    res.send(result) 
-  })
-  
-
-  app.patch('/user', async(req, res) => {
-    const user = req.body 
-    const filter = { email: user.email }
-    const updateDoc = {
-      $set: {
-        lastLoggedAt: user.lastLoggedAt
-      }
-    }
-    const result = await userCollection.updateOne(filter, updateDoc)
-    res.send(result) 
-  })
-
-  app.delete('/user/:id', async(req, res) => {
-    const id = req.params.id 
-    const query = { _id: new ObjectId(id)} 
-    const result = await userCollection.deleteOne(query)
-    res.send(result) 
-})
-
-
-
-
-
 
 
 
