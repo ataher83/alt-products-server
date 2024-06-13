@@ -58,7 +58,7 @@ async function run() {
 
   app.post('/queries', async(req, res) => {
       const newQuery = req.body
-      console.log(newQuery)
+      // console.log(newQuery)
       const result = await queriesCollection.insertOne(newQuery)
       res.send(result) 
   })
@@ -69,22 +69,23 @@ async function run() {
       const filter = { _id: new ObjectId(id)} 
       const options = { upsert: true }
       const updatedQuery = req.body
+      // The query variable is unnecessary. You can directly use $set in the update operation /cgp
       const query = {
           $set: {
-            productImage: updatedCraft.productImage,
-            productName: updatedCraft.productName,
-            productBrand: updatedCraft.productBrand,
-            queryTitle: updatedCraft.queryTitle,
-            boycottingReasonDetails: updatedCraft.boycottingReasonDetails,
-            userEmail: updatedCraft.userEmail,
-            userName: updatedCraft.userName,
-            userImage: updatedCraft.userImage,
-            currentDateAndTime: updatedCraft.currentDateAndTime,
-            recommendationCount: updatedCraft.recommendationCount
+            productImage: updatedQuery.productImage,
+            productName: updatedQuery.productName,
+            productBrand: updatedQuery.productBrand,
+            queryTitle: updatedQuery.queryTitle,
+            boycottingReasonDetails: updatedQuery.boycottingReasonDetails,
+            userEmail: updatedQuery.userEmail,
+            userName: updatedQuery.userName,
+            userImage: updatedQuery.userImage,
+            currentDateAndTime: updatedQuery.currentDateAndTime,
+            recommendationCount: updatedQuery.recommendationCount
           }
       }
 
-      const result = await queriesCollection.updateOne(filter, queries, options)
+      const result = await queriesCollection.updateOne(filter, query, options)
       res.send(result) 
   })
 
@@ -115,13 +116,43 @@ async function run() {
       res.send(result) 
   })
 
-
   app.post('/recommendations', async(req, res) => {
-      const newQuery = req.body
-      // console.log(newQuery)
-      const result = await recommendationsCollection.insertOne(newQuery)
+      const newRecommendation = req.body
+      const result = await recommendationsCollection.insertOne(newRecommendation)
       res.send(result) 
   })
+
+
+
+
+//   app.post('/recommendations', async (req, res) => {
+//     const newRecommendation = req.body;
+//     const result = await recommendationsCollection.insertOne(newRecommendation);
+
+//     // Increment recommendationCount in the corresponding query
+//     const queryId = newRecommendation.queryId;
+//     await queriesCollection.updateOne({ _id: new ObjectId(queryId) }, { $inc: { recommendationCount: 1 } });
+//     res.send(result);
+// });
+
+
+// app.post('/recommendations', async (req, res) => {
+//   const newRecommendation = req.body;
+
+//   // Convert recommendationCount to a number if it's stored as a string
+//   newRecommendation.recommendationCount = parseInt(newRecommendation.recommendationCount);
+
+//   const result = await recommendationsCollection.insertOne(newRecommendation);
+
+//   // Increment recommendationCount in the corresponding query
+//   const queryId = newRecommendation.queryId;
+//   await queriesCollection.updateOne({ _id: new ObjectId(queryId) }, { $inc: { recommendationCount: 1 } });
+
+//   res.send(result);
+// });
+
+
+
 
 
   app.delete('/recommendations/:id', async(req, res) => {
